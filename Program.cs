@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -35,8 +36,15 @@ namespace CollegeTournament
         {
             conn.Open();
             var cmd = conn.CreateCommand();
-            cmd.CommandText = $"INSERT INTO SportsDetails VALUES('{sportName}',{maxPlayers})";
-            cmd.ExecuteReader().Close();
+            try
+            {
+                cmd.CommandText = $"INSERT INTO SportsDetails VALUES('{sportName}',{maxPlayers})";
+                cmd.ExecuteReader().Close();
+            }
+            catch (SqlException ex)
+            {
+                Console.WriteLine($"{sportName} already exist!");
+            }
             conn.Close();
         }
 
@@ -53,8 +61,15 @@ namespace CollegeTournament
         {
             conn.Open();
             var cmd = conn.CreateCommand();
-            cmd.CommandText = $"INSERT INTO TournamentList VALUES('{tournamentName}')";
-            cmd.ExecuteReader().Close();
+            try
+            {
+                cmd.CommandText = $"INSERT INTO TournamentList VALUES('{tournamentName}')";
+                cmd.ExecuteReader().Close();
+            }
+            catch (SqlException ex)
+            {
+                Console.WriteLine($"{tournamentName} already exist!");
+            }
             conn.Close();
         }
         public static void RemoveTournament(string tournamentName)
@@ -95,10 +110,11 @@ namespace CollegeTournament
 
         public static void Main(string[] args)
         {
+            AddTournament("RDTournament");
+            AddSport("Cricket", 11);
+            AddSport("Women Cricket", 11);
             AddSportTeam("teamName", 1, 1);
             AddPlayer("Yuvateja", "CSE", 1);
-            AddSport("Cricket", 11);
-            AddTournament("RDTournament");
             AddScoreboard(1, 1, 1, 1, 90);
             AddPlayer("Harish", "ECE", 1);
             AddPlayer("Guru", "ECE", 1);
@@ -110,7 +126,11 @@ namespace CollegeTournament
             AddPlayer("R Sharma", "CSE", 1);
             AddPlayer("Markram", "CSE", 1);
             AddPlayer("Archer", "CSE", 1);
-            Console.WriteLine("DOne");
+            RemoveSport("Women Cricket");
+            RemoveTournament("RDTournament");
+            AddSport("Cricket", 11);
+            AddTournament("RDTournament");
+            Console.WriteLine("Done");
         }
 
     }
